@@ -18,7 +18,6 @@ const fileIconClassName = "size-5 stroke-primary";
 
 const File = ({ file }: FileProps) => {
   const { url, name } = file;
-  console.log(url);
 
   return (
     <Link

@@ -83,7 +83,7 @@ const PostForm = () => {
     if (e.key === "Enter") {
       e.preventDefault();
 
-      const linkInput = e.currentTarget.value.trim().toLowerCase();
+      const linkInput = e.currentTarget.value.trim();
 
       if (linkInput && !field.value.includes(linkInput)) {
         form.setValue("links", [...field.value, linkInput]);
