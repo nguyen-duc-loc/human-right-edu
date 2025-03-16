@@ -30,7 +30,7 @@ const Comments = async ({ postSlug }: CommentsProps) => {
                   <Fragment
                     key={`post-${postSlug}-comment-${idx1}-paragraph-${idx2}`}
                   >
-                    <p className="col-start-2 break-words">{paragraph}</p>
+                    <p className="col-start-2 mt-3 break-words">{paragraph}</p>
                   </Fragment>
                 ))}
               </div>

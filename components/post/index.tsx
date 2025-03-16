@@ -76,10 +76,10 @@ const Post = ({ post, compact, me, files, children }: PostProps) => {
           ))}
         </div>
         {!compact && content.length > 0 && (
-          <div className="my-6 leading-loose">
+          <div className="my-6 leading-relaxed">
             {content.split(/\r?\n/).map((paragraph, index) => (
               <React.Fragment key={`post-${slug}-paragraph-${index}`}>
-                <p>{paragraph}</p>
+                <p className="mt-3">{paragraph}</p>
               </React.Fragment>
             ))}
           </div>
