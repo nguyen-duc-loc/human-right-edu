@@ -26,7 +26,7 @@ const Comments = async ({ postSlug }: CommentsProps) => {
             <div className="overflow-x-auto rounded-lg border px-4 py-3">
               <HeaderUser username={commenterUsername} time={createdAt} />
               <div className="mt-2 max-w-[500px]">
-                {content.split("\\n").map((paragraph, idx2) => (
+                {content.split(/\r?\n/).map((paragraph, idx2) => (
                   <Fragment
                     key={`post-${postSlug}-comment-${idx1}-paragraph-${idx2}`}
                   >

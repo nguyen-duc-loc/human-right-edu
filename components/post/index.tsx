@@ -77,7 +77,7 @@ const Post = ({ post, compact, me, files, children }: PostProps) => {
         </div>
         {!compact && content.length > 0 && (
           <div className="my-6 leading-loose">
-            {content.split("\\n").map((paragraph, index) => (
+            {content.split(/\r?\n/).map((paragraph, index) => (
               <React.Fragment key={`post-${slug}-paragraph-${index}`}>
                 <p>{paragraph}</p>
               </React.Fragment>
