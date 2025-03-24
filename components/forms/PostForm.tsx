@@ -328,7 +328,7 @@ const PostForm = <T extends FieldValues>({
           )}
         />
 
-        {formType === "EDIT" && addedFiles && addedFiles.length && (
+        {formType === "EDIT" && addedFiles && addedFiles.length > 0 && (
           <FormField
             name={"removedFiles" as Path<T>}
             control={form.control}

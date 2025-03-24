@@ -10,6 +10,8 @@ interface AttachedLinkProps {
   className?: string;
 }
 
+const wrappedLinkClassName = "text-sm font-medium underline underline-offset-2";
+
 const AttachedLink = ({
   url,
   remove = false,
@@ -19,10 +21,10 @@ const AttachedLink = ({
 }: AttachedLinkProps) => {
   return remove ? (
     <div
-      className={`flex items-center gap-2 truncate text-sm font-medium underline underline-offset-2 ${className}`}
+      className={`${wrappedLinkClassName} flex items-center gap-2 ${className}`}
     >
       <Link href={url} target="_blank">
-        {url}
+        {`${url.slice(0, 50)}${url.length > 50 ? "..." : ""}`}
       </Link>
       <button type="button" disabled={disabled} onClick={handleRemove}>
         <X className="size-3 cursor-pointer" />
@@ -30,11 +32,11 @@ const AttachedLink = ({
     </div>
   ) : (
     <Link
-      className={`max-w-fit truncate rounded-md text-sm font-medium underline underline-offset-2 ${className}`}
+      className={`${wrappedLinkClassName} ${className}`}
       href={url}
       target="_blank"
     >
-      {url}
+      {`${url.slice(0, 50)}${url.length > 50 && "..."}`}
     </Link>
   );
 };
