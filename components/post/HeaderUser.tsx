@@ -1,5 +1,3 @@
-import { format } from "date-fns";
-import { vi } from "date-fns/locale";
 import Link from "next/link";
 import React from "react";
 
@@ -10,7 +8,7 @@ interface HeaderUserProps {
   time: Date;
 }
 
-const HeaderUser = ({ username, time }: HeaderUserProps) => {
+const HeaderUser = ({ username }: HeaderUserProps) => {
   return (
     <div className="flex flex-col space-y-1.5 p-0">
       <Link
@@ -19,11 +17,11 @@ const HeaderUser = ({ username, time }: HeaderUserProps) => {
       >
         {username}
       </Link>
-      <time className="!m-0 text-xs text-muted-foreground">
+      {/* <time className="!m-0 text-xs text-muted-foreground">
         {format(time, "dd MMMM, yyyy 'lúc' HH:mm", {
           locale: vi,
         })}
-      </time>
+      </time> */}
     </div>
   );
 };
