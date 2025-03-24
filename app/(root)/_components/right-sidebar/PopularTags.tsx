@@ -1,6 +1,6 @@
 import React from "react";
 
-import Tag from "@/components/Tag";
+import Tag from "@/components/post/Tag";
 import { getTags } from "@/lib/api/data/tags";
 
 const PopularTags = async () => {

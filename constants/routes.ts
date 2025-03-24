@@ -8,6 +8,7 @@ const ROUTES = {
   signUp: "/sign-up",
   tag: (name: string) => `/tag/${name}`,
   post: (slug: string) => `/post/${slug}`,
+  editPost: (slug: string) => `/post/${slug}/edit`,
   user: (username: string) => `/user/${username}`,
 };
 

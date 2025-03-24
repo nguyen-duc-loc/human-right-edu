@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import React from "react";
 
-import LocalSearch from "@/components/LocalSearch";
+import LocalSearch from "@/components/post/LocalSearch";
 import ROUTES from "@/constants/routes";
 import { getTags } from "@/lib/api/data/tags";
 

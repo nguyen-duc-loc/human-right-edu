@@ -17,7 +17,7 @@ const NotFoundPage = ({ message }: { message: string }) => {
         <Button asChild variant="outline">
           <Link href="/">
             <House />
-            Go home
+            Trở về trang chủ
           </Link>
         </Button>
       </div>

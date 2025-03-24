@@ -94,6 +94,13 @@ export const CreatePostSchema = z.object({
 });
 export type CreatePostData = z.infer<typeof CreatePostSchema>;
 
+export const EditPostSchema = CreatePostSchema.extend({
+  removedFiles: z.array(
+    z.string().min(1, { message: "File bị xoá không được để trống" })
+  ),
+});
+export type EditPostData = z.infer<typeof EditPostSchema>;
+
 export const CommentSchema = z.object({
   content: z
     .string()

@@ -6,6 +6,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import ROUTES from "@/constants/routes";
+
 import Spinner from "../Spinner";
 import { Form } from "../ui/form";
 
@@ -17,11 +19,12 @@ interface ActionBtnProps {
   className?: string;
   filledClassName?: string;
   compact?: boolean;
-  btnType: "LIKE" | "COMMENT" | "DELETE";
+  btnType: "LIKE" | "COMMENT" | "EDIT" | "DELETE";
   actionDisabled?: boolean;
   onSubmit?: () => Promise<ActionResponse<unknown>>;
   successMessage?: string;
   redirect?: string;
+  slug?: string;
 }
 
 const ActionBtn = ({
@@ -37,6 +40,7 @@ const ActionBtn = ({
   onSubmit,
   successMessage,
   redirect,
+  slug,
 }: ActionBtnProps) => {
   const router = useRouter();
   const form = useForm();
@@ -54,7 +58,7 @@ const ActionBtn = ({
         {children}
         <span className="text-sm">{number}</span>
       </div>
-    ) : btnType !== "COMMENT" && onSubmit ? (
+    ) : btnType !== "COMMENT" && btnType !== "EDIT" && onSubmit ? (
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(async () => {
@@ -86,6 +90,10 @@ const ActionBtn = ({
           <span className="text-sm">{number}</span>
         </form>
       </Form>
+    ) : btnType === "EDIT" ? (
+      <Link href={ROUTES.editPost(String(slug))} className={componentClassName}>
+        {children}
+      </Link>
     ) : (
       <Link
         href={`${btnType === "COMMENT" ? "#comments" : "#"}`}

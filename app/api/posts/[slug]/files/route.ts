@@ -44,6 +44,7 @@ export async function GET(
       )
     );
     const files: GetFilesInPostResponseData = foundedFiles.map((file, idx) => ({
+      fileId: file.fileId,
       name: file.name,
       url: fileUrls[idx],
     }));

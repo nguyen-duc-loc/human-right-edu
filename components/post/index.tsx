@@ -1,28 +1,28 @@
 "use client";
 
 import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
-import { MessageCircle, Trash2 } from "lucide-react";
+import { MessageCircle, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
 import ROUTES from "@/constants/routes";
 import { deletePost, likePost, unlikePost } from "@/lib/api/actions/posts";
 
-import Tag from "../Tag";
 import ActionBtn from "./ActionBtn";
+import AttachedLink from "./AttachedLink";
 import File from "./File";
 import HeaderAvatar from "./HeaderAvatar";
 import HeaderUser from "./HeaderUser";
-import AttachedLink from "../AttachedLink";
+import Tag from "./Tag";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 
-type PostProps = {
+interface PostProps {
   post: GetPostBySlugResponseData;
   files?: GetFilesInPostResponseData;
   compact?: boolean;
   me?: User | null;
   children?: React.ReactNode;
-};
+}
 
 const Post = ({ post, compact, me, files, children }: PostProps) => {
   const {
@@ -47,14 +47,22 @@ const Post = ({ post, compact, me, files, children }: PostProps) => {
           <HeaderUser username={authorUsername} time={createdAt} />
         </div>
         {!compact && me?.username === authorUsername && (
-          <ActionBtn
-            btnType="DELETE"
-            Icon={Trash2}
-            className="mr-6 stroke-red-500"
-            onSubmit={() => deletePost(slug)}
-            successMessage="Xoá tài liệu thành công"
-            redirect={ROUTES.home}
-          />
+          <div className="flex gap-4">
+            <ActionBtn
+              btnType="EDIT"
+              Icon={Pencil}
+              className="stroke-blue-500"
+              slug={slug}
+            />
+            <ActionBtn
+              btnType="DELETE"
+              Icon={Trash2}
+              className="mr-6 stroke-red-500"
+              onSubmit={() => deletePost(slug)}
+              successMessage="Xoá tài liệu thành công"
+              redirect={ROUTES.home}
+            />
+          </div>
         )}
       </CardHeader>
       <CardContent>
@@ -95,8 +103,8 @@ const Post = ({ post, compact, me, files, children }: PostProps) => {
         )}
         {!compact && files && files.length > 0 && (
           <div className="flex flex-wrap gap-4">
-            {files?.map((file, idx) => (
-              <File key={`post-${slug}-file-${idx}`} file={file} />
+            {files?.map((file) => (
+              <File key={`post-${slug}-file-${file.fileId}`} file={file} />
             ))}
           </div>
         )}

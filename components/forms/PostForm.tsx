@@ -1,19 +1,25 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { useForm } from "react-hook-form";
+import {
+  DefaultValues,
+  FieldValues,
+  Path,
+  PathValue,
+  useForm,
+} from "react-hook-form";
 import { toast } from "sonner";
+import { ZodType } from "zod";
 
 import ROUTES from "@/constants/routes";
-import { createPost } from "@/lib/api/actions/posts";
-import { CreatePostData, CreatePostSchema } from "@/lib/validation";
 
-import AttachedLink from "../AttachedLink";
+import AttachedLink from "../post/AttachedLink";
+import File from "../post/File";
+import Tag from "../post/Tag";
 import Spinner from "../Spinner";
-import Tag from "../Tag";
 import { Button } from "../ui/button";
 import {
   Form,
@@ -27,18 +33,26 @@ import {
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
-const PostForm = () => {
+interface PostFormProps<T extends FieldValues> {
+  schema: ZodType<T>;
+  defaultValues: T;
+  onSubmit: (data: T) => Promise<ActionResponse<unknown>>;
+  addedFiles?: PostFile[];
+  formType: "CREATE" | "EDIT";
+}
+
+const PostForm = <T extends FieldValues>({
+  schema,
+  defaultValues,
+  formType,
+  onSubmit,
+  addedFiles,
+}: PostFormProps<T>) => {
   const router = useRouter();
 
-  const form = useForm<CreatePostData>({
-    resolver: zodResolver(CreatePostSchema),
-    defaultValues: {
-      title: "",
-      content: "",
-      tags: [],
-      files: [],
-      links: [],
-    },
+  const form = useForm<T>({
+    resolver: zodResolver(schema),
+    defaultValues: defaultValues as DefaultValues<T>,
   });
 
   const handleTagInputKeyDown = (
@@ -57,16 +71,19 @@ const PostForm = () => {
         tagInput.length <= 50 &&
         !field.value.includes(tagInput)
       ) {
-        form.setValue("tags", [...field.value, tagInput]);
+        form.setValue(
+          "tags" as Path<T>,
+          [...field.value, tagInput] as PathValue<T, Path<T>>
+        );
         e.currentTarget.value = "";
-        form.clearErrors("tags");
+        form.clearErrors("tags" as Path<T>);
       } else if (tagInput.length > 50) {
-        form.setError("tags", {
+        form.setError("tags" as Path<T>, {
           type: "manual",
           message: "Tên chủ đề không được quá 50 ký tự",
         });
       } else if (field.value.includes(tagInput)) {
-        form.setError("tags", {
+        form.setError("tags" as Path<T>, {
           type: "manual",
           message: "Tên chủ đề đã tồn tại",
         });
@@ -86,11 +103,14 @@ const PostForm = () => {
       const linkInput = e.currentTarget.value.trim();
 
       if (linkInput && !field.value.includes(linkInput)) {
-        form.setValue("links", [...field.value, linkInput]);
+        form.setValue(
+          "links" as Path<T>,
+          [...field.value, linkInput] as PathValue<T, Path<T>>
+        );
         e.currentTarget.value = "";
-        form.clearErrors("links");
+        form.clearErrors("links" as Path<T>);
       } else if (field.value.includes(linkInput)) {
-        form.setError("links", {
+        form.setError("links" as Path<T>, {
           type: "manual",
           message: "Link đã tồn tại",
         });
@@ -101,10 +121,10 @@ const PostForm = () => {
   const handleTagRemove = (tag: string, field: { value: string[] }) => {
     const newTags = field.value.filter((t) => t !== tag);
 
-    form.setValue("tags", newTags);
+    form.setValue("tags" as Path<T>, newTags as PathValue<T, Path<T>>);
 
     if (newTags.length === 0) {
-      form.setError("tags", {
+      form.setError("tags" as Path<T>, {
         type: "manual",
         message: "Hãy tạo ít nhất 1 chủ đề",
       });
@@ -113,18 +133,30 @@ const PostForm = () => {
 
   const handleLinkRemove = (url: string, field: { value: string[] }) => {
     const newLinks = field.value.filter((u) => u !== url);
-    form.setValue("links", newLinks);
+    form.setValue("links" as Path<T>, newLinks as PathValue<T, Path<T>>);
   };
 
-  const handleSubmit = async (data: CreatePostData) => {
-    const response = await createPost(data);
+  const handleFileRemove = (fileId: string, field: { value: string[] }) => {
+    const newRemovedFiles = [...field.value, fileId];
+    form.setValue(
+      "removedFiles" as Path<T>,
+      newRemovedFiles as PathValue<T, Path<T>>
+    );
+  };
+
+  const handleSubmit = async (data: T) => {
+    const response = await onSubmit(data);
     if (!response.success) {
       toast.error(response.error?.message);
     } else {
-      form.reset();
-      const { slug } = response.data as CreatePostResponseData;
+      if (formType === "CREATE") {
+        form.reset();
+      }
+      const { slug } = response.data as { slug: string };
       router.push(ROUTES.post(slug));
-      toast.success("Tạo tài liệu thành công");
+      toast.success(
+        `${formType === "CREATE" ? "Tạo" : "Chỉnh sửa"} tài liệu thành công`
+      );
     }
   };
 
@@ -139,7 +171,7 @@ const PostForm = () => {
       >
         <FormField
           control={form.control}
-          name="title"
+          name={"title" as Path<T>}
           render={({ field }) => (
             <FormItem className="flex w-full flex-col gap-2">
               <FormLabel>
@@ -163,7 +195,7 @@ const PostForm = () => {
 
         <FormField
           control={form.control}
-          name="content"
+          name={"content" as Path<T>}
           render={({ field }) => (
             <FormItem className="flex w-full flex-col gap-2">
               <FormLabel>
@@ -187,7 +219,7 @@ const PostForm = () => {
 
         <FormField
           control={form.control}
-          name="tags"
+          name={"tags" as Path<T>}
           render={({ field }) => (
             <FormItem className="flex w-full flex-col gap-2">
               <FormLabel>
@@ -204,7 +236,7 @@ const PostForm = () => {
                   />
                   {field.value.length > 0 && (
                     <div className="mt-2.5 flex flex-wrap gap-2.5">
-                      {field?.value?.map((tag) => (
+                      {field?.value?.map((tag: string) => (
                         <Tag
                           key={tag}
                           name={tag}
@@ -228,7 +260,7 @@ const PostForm = () => {
 
         <FormField
           control={form.control}
-          name="links"
+          name={"links" as Path<T>}
           render={({ field }) => (
             <FormItem className="flex w-full flex-col gap-2">
               <FormLabel>
@@ -245,7 +277,7 @@ const PostForm = () => {
                   />
                   {field.value.length > 0 && (
                     <ul className="my-4 ml-8 list-disc [&>li]:mt-2">
-                      {field?.value?.map((link, idx) => (
+                      {field?.value?.map((link: string, idx: number) => (
                         <li key={`link-${idx}`}>
                           <AttachedLink
                             url={link}
@@ -269,10 +301,10 @@ const PostForm = () => {
         />
 
         <FormField
-          name="files"
+          name={"files" as Path<T>}
           control={form.control}
           render={() => (
-            <FormItem>
+            <FormItem className="flex w-full flex-col gap-2">
               <FormLabel>Tệp đính kèm</FormLabel>
               <FormControl>
                 <Input
@@ -282,8 +314,10 @@ const PostForm = () => {
                   multiple
                   onChange={(e) =>
                     form.setValue(
-                      "files",
-                      e.target.files ? Array.from(e.target.files) : []
+                      "files" as Path<T>,
+                      (e.target.files
+                        ? Array.from(e.target.files)
+                        : []) as PathValue<T, Path<T>>
                     )
                   }
                   disabled={isSubmitting}
@@ -294,10 +328,37 @@ const PostForm = () => {
           )}
         />
 
+        {formType === "EDIT" && addedFiles && addedFiles.length && (
+          <FormField
+            name={"removedFiles" as Path<T>}
+            control={form.control}
+            render={({ field }) => (
+              <div className="flex max-w-[800px] flex-wrap gap-4">
+                {addedFiles
+                  .filter((file) => !field.value.includes(file.fileId))
+                  .map((file) => (
+                    <File
+                      key={`file-${file.fileId}`}
+                      file={file}
+                      remove
+                      handleRemove={() => handleFileRemove(file.fileId, field)}
+                    />
+                  ))}
+              </div>
+            )}
+          />
+        )}
+
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? <Spinner /> : <Plus />}
-            Tạo tài liệu
+            {isSubmitting ? (
+              <Spinner />
+            ) : formType === "CREATE" ? (
+              <Plus />
+            ) : (
+              <Check />
+            )}
+            {formType === "CREATE" ? "Tạo" : "Chỉnh sửa"} tài liệu
           </Button>
         </div>
       </form>

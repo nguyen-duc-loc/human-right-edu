@@ -1,8 +1,8 @@
 import React from "react";
 
-import LocalSearch from "@/components/LocalSearch";
 import Post from "@/components/post";
 import LoadMore from "@/components/post/LoadMore";
+import LocalSearch from "@/components/post/LocalSearch";
 import NoPost from "@/components/post/NoPost";
 import ROUTES from "@/constants/routes";
 import { getPosts } from "@/lib/api/data/posts";

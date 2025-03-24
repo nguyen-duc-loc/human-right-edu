@@ -1,6 +1,6 @@
 import React from "react";
 
-import Tag from "@/components/Tag";
+import Tag from "@/components/post/Tag";
 
 interface TagContainerProps {
   tags: Tag[];

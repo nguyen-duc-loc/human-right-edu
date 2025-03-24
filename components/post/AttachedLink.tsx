@@ -24,7 +24,7 @@ const AttachedLink = ({
       <Link href={url} target="_blank">
         {url}
       </Link>
-      <button disabled={disabled} onClick={handleRemove}>
+      <button type="button" disabled={disabled} onClick={handleRemove}>
         <X className="size-3 cursor-pointer" />
       </button>
     </div>

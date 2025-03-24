@@ -96,6 +96,9 @@ type GetUserResponseData =
 type CreatePostResponseData = PostModel &
   Omit<FileModel, "postId", "createdAt">[];
 
+type EditPostResponseData = PostModel &
+  Omit<FileModel, "postId", "createdAt">[];
+
 type GetPostBySlugResponseData = Omit<PostModel, "postId" | "authorId"> & {
   authorUsername: string;
   authorAvatar: string | null;
@@ -126,7 +129,7 @@ type GetCommentsInPost = (Omit<CommentModel, "postId" | "userId"> & {
   commenterAvatar: string;
 })[];
 
-type PostFile = Omit<FileModel, "postId" | "fileId" | "createdAt"> & {
+type PostFile = Omit<FileModel, "postId" | "createdAt"> & {
   url: string | null;
 };
 

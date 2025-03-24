@@ -62,24 +62,21 @@ export async function POST(request: Request) {
     );
     const newPost: CreatePostResponseData = insertPostResult.rows[0];
 
-    await Promise.all(
-      files.map(({ fileId, name }) =>
+    await Promise.all([
+      ...files.map(({ fileId, name }) =>
         client.query(
           `INSERT INTO files("fileId", "postId", name) VALUES ($1, $2, $3)`,
           [fileId, newPost.postId, name]
         )
-      )
-    );
-
-    await Promise.all(
-      files.map((file, idx) =>
+      ),
+      ...files.map((file, idx) =>
         postFilesStorageS3.putByKey(
           process.env.AWS_BUCKET!,
           `${process.env.POST_FILES_FOLDER}/${newPost.postId}/${file.fileId}`,
           uploadedFiles[idx]
         )
-      )
-    );
+      ),
+    ]);
 
     await client.query("COMMIT");
 
